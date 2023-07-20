@@ -1,4 +1,4 @@
-import './CSS/App.css';
+import './App.css';
 import Header from './Header';
 import Login from './Login';
 import {BrowserRouter as Router, Routes, Route, Switch, BrowserRouter} from 'react-router-dom';
