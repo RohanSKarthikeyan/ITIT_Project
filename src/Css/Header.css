@@ -1,0 +1,27 @@
+.main-div{
+    display: flex;
+}
+
+.nav{
+    display: flex;
+    margin-top: 20px;
+    
+}
+
+.img-div{
+    display: flex;
+    margin-right: 275px;
+    margin-left: 50px;
+}
+
+.menus-div{
+    display: flex;
+    margin-right: 200px;
+}
+
+.log-div{
+    display: flex;
+    
+}
+
+
