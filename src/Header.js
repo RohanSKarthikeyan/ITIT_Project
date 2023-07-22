@@ -4,10 +4,12 @@ import DropdownComp from './Dropdown'
 import { Button } from '@nextui-org/react'
 import './Css/Header.css'
 import { Link, useNavigate } from 'react-router-dom';
+import { useStateValue } from './StateProvider'
 
 function Header() {
 
     const navigate = useNavigate();
+    
 
   return (
     <div className='main-div'>
@@ -28,7 +30,7 @@ function Header() {
                 </Button>
 
                 <Button light>
-                    SERVICES
+                    EMPLOYEE LOGIN
                 </Button>
 
                 <Button light>
