@@ -1,48 +1,95 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from 'react';
 import Logo from './Images/embedLogo.png'
-import { Link } from 'react-router-dom';
 import './Css/EmpLogin.css'
 import { Input } from '@nextui-org/react';
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
+import 'firebase/firestore'
+import 'firebase/compat/firestore';
+import { useStateValue } from './StateProvider';
+import { Link, useNavigate } from 'react-router-dom';
 import app from './firebase';
 
 
 
 function EmployeeLogin() {
 
-    const [email,setEmail]=useState(''); 
-   const [password,setpassword]=useState('');
 
-   const auth = getAuth(app);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [{name}, dispatch] = useStateValue(); 
+  const navigate = useNavigate();
 
-   const handleSignIn = () => {
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // User successfully signed in
-        const user = userCredential.user;
-        console.log("Signed in user:", user);
-        // Add any additional logic you want to perform after successful sign-in
-      })
-      .catch((error) => {
-        // Handle sign-in errors
-        console.error("Error signing in:", error.message);
-      });
+  const [Emps, setEmps] = useState([]);
+
+  const db = getFirestore(app);
+  const colRef = collection(db, 'Employees');
+
+  useEffect(() => {
+    console.log('useEffect triggered');
+  
+    const fetchData = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, 'Employees'));
+        const employeesData = querySnapshot.docs.map((doc) => doc.data());
+        console.log('Data from Firestore:', employeesData);
+
+        if (employeesData.length === 0) {
+          console.log('No data found in Firestore.');
+        } else {
+          setEmps(employeesData);
+        }
+      } catch (error) {
+        console.error('Error fetching data from Firestore:', error.message);
+      }
+    };
+  
+    fetchData();
+  }, []);
+  
+  const handleSignIn = () => {
+    console.log(name);
+    const user = Emps.find((emp) => emp.EmpMail === email);
+  
+    if (user) {
+      
+
+      if (user.EmpPass === password) {
+        const userRole = user.EmpRole;
+        
+        dispatch({
+          type: 'REGISTERED_USER',
+          role: userRole,
+          name:user.EmpName
+        });
+        switch (userRole) {
+          case 'SOFTWARE DEVELOPER':
+            navigate('/swdev');
+            break;
+          case 'QUALITY ASSURANCE':
+            navigate('/quality-assurance');
+            break;
+          case 'CUSTOMER RELATIONS':
+            navigate('/customer-relations');
+            break;
+          case 'HUMAN RESOURCES OFFICER':
+            navigate('/human-resources-officer');
+            break;
+          default:
+            navigate('/');
+            break;
+        }
+      } else {
+        console.log('Invalid password.');
+      }
+    } else {
+      console.log('User not found or user data is null.');
+    }
   };
 
-  const handleCreateAccount = () => {
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // New user account created successfully
-        const user = userCredential.user;
-        console.log("New account created for user:", user);
-        // Add any additional logic you want to perform after successful account creation
-      })
-      .catch((error) => {
-        // Handle account creation errors
-        console.error("Error creating account:", error.message);
-      });
-  };
+  
+
+// ...
 
 
   return (
@@ -56,21 +103,22 @@ function EmployeeLogin() {
             </h1>
             <div className='input_div'>
                <label><strong>Email</strong></label><br/>
-               <Input className='input' value={email} onChange={e => setEmail(e.target.value)} bordered placeholder="User-Name" />
+               <Input className='input' value={email} onChange={e => setEmail(e.target.value)} bordered placeholder="User-Email" />
                
             </div>
             <div className='input_div'>
                <label><strong>Password</strong></label><br/>
-               <Input.Password className='input' value={password} onChange={e => setpassword(e.target.value)} />
+               <Input.Password className='input' value={password} onChange={e => setPassword(e.target.value)} />
               
             </div>
-                <button type="submit" onClick={handleSignIn} className='signin_button'>SIGN IN</button>
+                <button type="submit" onClick={handleSignIn} className='signin_button'>Hop In</button>
                 <br></br>
                 <center> <p>By continuing, you agree to xxx's Conditions <br/>a of Use and Privacy Notice.
                 We're a friendly, <br/>industry-focused community of developers</p></center>
                <br></br>
                 
-               <Link to='/'> <button type="submit" onClick={handleCreateAccount} className='newacc_button'>CREATE A NEW ACCOUNT</button></Link>
+               <Link to='/NewEmp'> <button type="submit" className='newacc_button'>NEW TO OUR COMPANY?</button></Link>
+
          </div>
     </div>
   )

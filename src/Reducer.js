@@ -1,27 +1,26 @@
-import { useActionData } from "react-router-dom";
-
 export const initialState = {
     user: null,
-};
-
-const reducer = (state,action) =>{
-    
-    switch(action.type){
-        
-        case 'SET_USER':
-            return {
-                ...state,
-                user:action.user
-            }
-      
-        case 'REGISTERED_USER' :
-            return{
-                ...state,
-            
-            }   
-        default:
+    role: null,
+    name: null,
+  };
+  
+  const reducer = (state, action) => {
+    switch (action.type) {
+      case 'SET_USER':
+        return {
+          ...state,
+          user: action.user,
+        };
+      case 'REGISTERED_USER':
+        return {
+          ...state,
+          name: action.name, 
+          email: action.email,
+        };
+      default:
         return state;
     }
-};
-
-export default reducer;
+  };
+  
+  export default reducer;
+  
